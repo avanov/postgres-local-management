@@ -40,10 +40,13 @@ $(PG_SSL_GENERATED): $(PG_MANAGEMENT_WORK_DIR)
 	touch $(PG_SSL_GENERATED)
 
 
-# local DB depends on the untrack dir, it creates a directory structure inside it
+# local DB depends on the untrack dir, it creates a directory structure inside.
+# the instance will be available from all networks
 $(PG_DB_INSTALLED): $(PG_SSL_GENERATED)
 	touch $(PG_DB_INSTALLED)
 	pg_ctl initdb -D $(PG_LOCAL_DB_PATH) -o "--locale=$(LANG)"
+	printf "\nlisten_addresses = '*'" >> $(PG_LOCAL_DB_PATH)/postgresql.conf
+	printf "\nhost all all all trust" >> $(PG_LOCAL_DB_PATH)/pg_hba.conf
 
 
 # A running postgres instance will generate this PID file.
